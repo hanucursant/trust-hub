@@ -1,0 +1,99 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: rgba(18, 18, 18, 0.98);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  z-index: 1000;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.2s;
+  flex: 1;
+  max-width: 80px;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  &.active {
+    color: #ffffff;
+    
+    .nav-icon {
+      opacity: 1;
+    }
+  }
+}
+
+.nav-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.nav-icon {
+  width: 28px;
+  height: 28px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  
+  &[data-icon="feed"]::before {
+    content: "🏠";
+  }
+  
+  &[data-icon="spaces"]::before {
+    content: "🔍";
+  }
+  
+  &[data-icon="members"]::before {
+    content: "🔔";
+  }
+  
+  &[data-icon="courses"]::before {
+    content: "💬";
+  }
+  
+  &[data-icon="events"]::before {
+    content: "💬";
+  }
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ff3b30;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid #000;
+}

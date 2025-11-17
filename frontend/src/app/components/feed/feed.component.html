@@ -1,0 +1,50 @@
+<div class="feed-container">
+  <!-- Tab Navigation -->
+  <div class="tabs-nav">
+    <button 
+      *ngFor="let tab of tabs" 
+      class="tab-button"
+      [class.active]="tab === selectedTab"
+    >
+      {{ tab }}
+      <span *ngIf="tab === 'Spaces'" class="tab-badge">2</span>
+    </button>
+  </div>
+
+  <!-- Feed Posts -->
+  <div class="posts-list">
+    <article *ngFor="let post of posts" class="post-card">
+      <!-- Post Header -->
+      <div class="post-header">
+        <div class="author-info">
+          <div class="author-avatar">{{ post.author.avatar }}</div>
+          <div class="author-details">
+            <div class="author-line">
+              <span class="author-name">{{ post.author.name }}</span>
+              <span class="location">in {{ post.author.location }}</span>
+              <span class="separator">·</span>
+              <span class="time">{{ post.timeAgo }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post Content -->
+      <div class="post-content">
+        <p class="post-text">{{ post.content }}</p>
+      </div>
+
+      <!-- Post Images -->
+      <div class="post-images" *ngIf="post.images.length > 0">
+        <div class="image-placeholder" *ngFor="let img of post.images">
+          <!-- Gradient placeholder for image -->
+        </div>
+      </div>
+
+      <!-- Engagement Button -->
+      <button class="engagement-button">
+        <span class="plus-icon">+</span>
+      </button>
+    </article>
+  </div>
+</div>
