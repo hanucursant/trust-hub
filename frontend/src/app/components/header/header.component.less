@@ -32,6 +32,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
+  position: relative;
 }
 
 .menu-icon {
@@ -81,5 +82,68 @@
 
   &:hover {
     transform: scale(1.05);
+  }
+}
+
+.user-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  min-width: 200px;
+  overflow: hidden;
+  z-index: 1001;
+}
+
+.user-menu-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c026d3 0%, #9333ea 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.logout-button {
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: #f44336;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(244, 67, 54, 0.1);
   }
 }

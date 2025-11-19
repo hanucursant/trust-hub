@@ -8,7 +8,7 @@
   </div>
   
   <div class="header-center">
-    <h1 class="app-title">VSFA+</h1>
+    <h1 class="app-title">TRUST HUB</h1>
   </div>
   
   <div class="header-right">
@@ -19,8 +19,19 @@
         <circle cx="19" cy="12" r="2"/>
       </svg>
     </div>
-    <div class="profile-icon">
+    <div class="profile-icon" *ngIf="isLoggedIn" (click)="toggleUserMenu()">
       {{ userInitials }}
+    </div>
+    <div class="user-menu" *ngIf="showUserMenu && isLoggedIn">
+      <div class="user-menu-header">
+        <div class="user-avatar">{{ userInitials }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ userName }}</div>
+        </div>
+      </div>
+      <button class="logout-button" (click)="logout()">
+        <span>🚪</span> Logout
+      </button>
     </div>
   </div>
 </header>

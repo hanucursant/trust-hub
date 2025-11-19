@@ -1,17 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Post {
-  id: number;
-  author: {
-    name: string;
-    avatar: string;
-    location: string;
-  };
-  timeAgo: string;
-  content: string;
-  images: string[];
-}
+import { ApiService, Post, Space, Member, Course, Event } from '../../services/api.service';
 
 @Component({
   selector: 'app-feed',
@@ -20,21 +9,118 @@ interface Post {
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.less'
 })
-export class FeedComponent {
+export class FeedComponent implements OnInit {
   selectedTab = 'Feed';
   tabs = ['Feed', 'Spaces', 'Members', 'Courses', 'Events'];
+  posts: Post[] = [];
+  spaces: Space[] = [];
+  members: Member[] = [];
+  courses: Course[] = [];
+  events: Event[] = [];
+  loading = false;
+  error: string | null = null;
   
-  posts: Post[] = [
-    {
-      id: 1,
-      author: {
-        name: 'Todea Bianca',
-        avatar: 'TB',
-        location: 'Anunțuri'
-      },
-      timeAgo: '3d',
-      content: '💥 Cu 60 de lei pe lună intri la cel mai mare eveniment VSFA+ 💥\n\nDa, ai citit bine. Cu doar 60 de lei pe lună, intri GRATUIT la FoundAIrs Summit - evenimentul în c...',
-      images: ['post1-1.jpg', 'post1-2.jpg']
+  constructor(private apiService: ApiService) {}
+  
+  ngOnInit() {
+    this.loadData();
+  }
+  
+  selectTab(tab: string) {
+    this.selectedTab = tab;
+    this.loadData();
+  }
+  
+  loadData() {
+    this.loading = true;
+    this.error = null;
+    
+    switch(this.selectedTab) {
+      case 'Feed':
+        this.loadPosts();
+        break;
+      case 'Spaces':
+        this.loadSpaces();
+        break;
+      case 'Members':
+        this.loadMembers();
+        break;
+      case 'Courses':
+        this.loadCourses();
+        break;
+      case 'Events':
+        this.loadEvents();
+        break;
     }
-  ];
+  }
+  
+  loadPosts() {
+    this.apiService.getPosts().subscribe({
+      next: (data) => {
+        this.posts = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load posts';
+        this.loading = false;
+        console.error('Error loading posts:', err);
+      }
+    });
+  }
+  
+  loadSpaces() {
+    this.apiService.getSpaces().subscribe({
+      next: (data) => {
+        this.spaces = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load spaces';
+        this.loading = false;
+        console.error('Error loading spaces:', err);
+      }
+    });
+  }
+  
+  loadMembers() {
+    this.apiService.getMembers().subscribe({
+      next: (data) => {
+        this.members = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load members';
+        this.loading = false;
+        console.error('Error loading members:', err);
+      }
+    });
+  }
+  
+  loadCourses() {
+    this.apiService.getCourses().subscribe({
+      next: (data) => {
+        this.courses = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load courses';
+        this.loading = false;
+        console.error('Error loading courses:', err);
+      }
+    });
+  }
+  
+  loadEvents() {
+    this.apiService.getEvents().subscribe({
+      next: (data) => {
+        this.events = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load events';
+        this.loading = false;
+        console.error('Error loading events:', err);
+      }
+    });
+  }
 }

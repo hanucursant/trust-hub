@@ -4,12 +4,17 @@ import { SpacesComponent } from './components/spaces/spaces.component';
 import { MembersComponent } from './components/members/members.component';
 import { CoursesComponent } from './components/courses/courses.component';
 import { EventsComponent } from './components/events/events.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: '', redirectTo: '/feed', pathMatch: 'full' },
-  { path: 'feed', component: FeedComponent },
-  { path: 'spaces', component: SpacesComponent },
-  { path: 'members', component: MembersComponent },
-  { path: 'courses', component: CoursesComponent },
-  { path: 'events', component: EventsComponent }
+  { path: 'feed', component: FeedComponent, canActivate: [AuthGuard] },
+  { path: 'spaces', component: SpacesComponent, canActivate: [AuthGuard] },
+  { path: 'members', component: MembersComponent, canActivate: [AuthGuard] },
+  { path: 'courses', component: CoursesComponent, canActivate: [AuthGuard] },
+  { path: 'events', component: EventsComponent, canActivate: [AuthGuard] }
 ];

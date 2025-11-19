@@ -5,23 +5,34 @@
       *ngFor="let tab of tabs" 
       class="tab-button"
       [class.active]="tab === selectedTab"
+      (click)="selectTab(tab)"
     >
       {{ tab }}
-      <span *ngIf="tab === 'Spaces'" class="tab-badge">2</span>
+      <span *ngIf="tab === 'Spaces'" class="tab-badge">{{ spaces.length }}</span>
     </button>
   </div>
 
+  <!-- Loading State -->
+  <div *ngIf="loading" style="padding: 20px; text-align: center; color: #999;">
+    Loading...
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" style="padding: 20px; text-align: center; color: #f44336;">
+    {{ error }}
+  </div>
+
   <!-- Feed Posts -->
-  <div class="posts-list">
+  <div class="posts-list" *ngIf="!loading && !error && selectedTab === 'Feed'">
     <article *ngFor="let post of posts" class="post-card">
       <!-- Post Header -->
       <div class="post-header">
         <div class="author-info">
-          <div class="author-avatar">{{ post.author.avatar }}</div>
+          <div class="author-avatar">{{ post.authorAvatar }}</div>
           <div class="author-details">
             <div class="author-line">
-              <span class="author-name">{{ post.author.name }}</span>
-              <span class="location">in {{ post.author.location }}</span>
+              <span class="author-name">{{ post.author }}</span>
+              <span class="location">{{ post.authorRole }}</span>
               <span class="separator">·</span>
               <span class="time">{{ post.timeAgo }}</span>
             </div>
@@ -34,11 +45,18 @@
         <p class="post-text">{{ post.content }}</p>
       </div>
 
-      <!-- Post Images -->
-      <div class="post-images" *ngIf="post.images.length > 0">
-        <div class="image-placeholder" *ngFor="let img of post.images">
-          <!-- Gradient placeholder for image -->
+      <!-- Post Image -->
+      <div class="post-images" *ngIf="post.image">
+        <div class="image-placeholder">
+          <img [src]="post.image" [alt]="post.author" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
         </div>
+      </div>
+
+      <!-- Engagement Stats -->
+      <div class="engagement-stats" style="display: flex; gap: 20px; padding: 10px 0; color: #999; font-size: 14px;">
+        <span>❤️ {{ post.likes }}</span>
+        <span>💬 {{ post.comments }}</span>
+        <span>↗️ {{ post.shares }}</span>
       </div>
 
       <!-- Engagement Button -->
@@ -46,5 +64,69 @@
         <span class="plus-icon">+</span>
       </button>
     </article>
+  </div>
+
+  <!-- Spaces List -->
+  <div class="content-list" *ngIf="!loading && !error && selectedTab === 'Spaces'">
+    <div *ngFor="let space of spaces" class="content-card">
+      <img *ngIf="space.image" [src]="space.image" [alt]="space.name" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0;" />
+      <div style="padding: 15px;">
+        <h3 style="margin: 0 0 8px 0; color: white;">{{ space.name }}</h3>
+        <p style="color: #999; font-size: 14px; margin: 0 0 8px 0;">{{ space.description }}</p>
+        <p style="color: #999; font-size: 14px; margin: 0;">{{ space.members }} members</p>
+        <button *ngIf="space.isJoined" style="margin-top: 10px; padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Joined ✓</button>
+        <button *ngIf="!space.isJoined" style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Join</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Members List -->
+  <div class="content-list" *ngIf="!loading && !error && selectedTab === 'Members'">
+    <div *ngFor="let member of members" class="content-card">
+      <div style="padding: 15px; display: flex; align-items: center; gap: 15px;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-weight: 600; color: white; font-size: 18px;">
+          {{ member.avatar }}
+        </div>
+        <div style="flex: 1;">
+          <h3 style="margin: 0 0 4px 0; color: white;">{{ member.name }}</h3>
+          <p style="color: #999; font-size: 14px; margin: 0;">{{ member.role }}</p>
+          <p style="color: #999; font-size: 14px; margin: 4px 0 0 0;">{{ member.connections }} connections</p>
+        </div>
+        <button *ngIf="member.isConnected" style="padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Connected ✓</button>
+        <button *ngIf="!member.isConnected" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Courses List -->
+  <div class="content-list" *ngIf="!loading && !error && selectedTab === 'Courses'">
+    <div *ngFor="let course of courses" class="content-card">
+      <img *ngIf="course.image" [src]="course.image" [alt]="course.title" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0;" />
+      <div style="padding: 15px;">
+        <h3 style="margin: 0 0 8px 0; color: white;">{{ course.title }}</h3>
+        <p style="color: #999; font-size: 14px; margin: 0 0 8px 0;">Instructor: {{ course.instructor }}</p>
+        <div style="display: flex; gap: 15px; margin-bottom: 8px;">
+          <span style="color: #999; font-size: 14px;">⏱️ {{ course.duration }}</span>
+          <span style="color: #999; font-size: 14px;">📊 {{ course.level }}</span>
+        </div>
+        <p style="color: #999; font-size: 14px; margin: 0;">{{ course.enrolled }} students enrolled</p>
+        <button style="margin-top: 10px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;">Enroll Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events List -->
+  <div class="content-list" *ngIf="!loading && !error && selectedTab === 'Events'">
+    <div *ngFor="let event of events" class="content-card">
+      <img *ngIf="event.image" [src]="event.image" [alt]="event.title" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0;" />
+      <div style="padding: 15px;">
+        <h3 style="margin: 0 0 8px 0; color: white;">{{ event.title }}</h3>
+        <p style="color: #999; font-size: 14px; margin: 0 0 4px 0;">📅 {{ event.date }} at {{ event.time }}</p>
+        <p style="color: #999; font-size: 14px; margin: 0 0 4px 0;">📍 {{ event.location }}</p>
+        <p style="color: #999; font-size: 14px; margin: 0 0 8px 0;">👥 {{ event.attendees }} attendees</p>
+        <button *ngIf="event.isRegistered" style="padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;">Registered ✓</button>
+        <button *ngIf="!event.isRegistered" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;">Register</button>
+      </div>
+    </div>
   </div>
 </div>
