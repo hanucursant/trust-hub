@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService, Post, Space, Member, Course, Event } from '../../services/api.service';
+import { JobService, Job } from '../../services/job.service';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-feed',
@@ -10,19 +11,22 @@ import { ApiService, Post, Space, Member, Course, Event } from '../../services/a
   styleUrl: './feed.component.less'
 })
 export class FeedComponent implements OnInit {
-  selectedTab = 'Feed';
-  tabs = ['Feed', 'Spaces', 'Members', 'Courses', 'Events'];
-  posts: Post[] = [];
-  spaces: Space[] = [];
-  members: Member[] = [];
-  courses: Course[] = [];
-  events: Event[] = [];
+  selectedTab = 'All Jobs';
+  tabs = ['All Jobs', 'My Jobs', 'In Progress', 'Completed'];
+  jobs: Job[] = [];
   loading = false;
   error: string | null = null;
+  currentUser: User | null = null;
   
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private jobService: JobService,
+    private authService: AuthService
+  ) {}
   
   ngOnInit() {
+    this.authService.currentUser.subscribe(user => {
+      this.currentUser = user;
+    });
     this.loadData();
   }
   
@@ -35,92 +39,99 @@ export class FeedComponent implements OnInit {
     this.loading = true;
     this.error = null;
     
+    this.jobService.getJobs().subscribe({
+      next: (data) => {
+        this.jobs = this.filterJobsByTab(data);
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load jobs';
+        this.loading = false;
+        console.error('Error loading jobs:', err);
+      }
+    });
+  }
+
+  filterJobsByTab(jobs: Job[]): Job[] {
+    if (!this.currentUser) return [];
+
     switch(this.selectedTab) {
-      case 'Feed':
-        this.loadPosts();
-        break;
-      case 'Spaces':
-        this.loadSpaces();
-        break;
-      case 'Members':
-        this.loadMembers();
-        break;
-      case 'Courses':
-        this.loadCourses();
-        break;
-      case 'Events':
-        this.loadEvents();
-        break;
+      case 'All Jobs':
+        return jobs.filter(job => job.approved_by_admin);
+      
+      case 'My Jobs':
+        if (this.currentUser.role === 'company') {
+          return jobs.filter(job => job.client_id === this.currentUser!.id);
+        } else if (this.currentUser.role === 'expert') {
+          return jobs.filter(job => job.expert_id === this.currentUser!.id);
+        }
+        return [];
+      
+      case 'In Progress':
+        return jobs.filter(job => 
+          job.status === 'in_progress' && 
+          (job.client_id === this.currentUser!.id || job.expert_id === this.currentUser!.id)
+        );
+      
+      case 'Completed':
+        return jobs.filter(job => 
+          job.status === 'completed' && 
+          (job.client_id === this.currentUser!.id || job.expert_id === this.currentUser!.id)
+        );
+      
+      default:
+        return jobs;
     }
   }
-  
-  loadPosts() {
-    this.apiService.getPosts().subscribe({
-      next: (data) => {
-        this.posts = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Failed to load posts';
-        this.loading = false;
-        console.error('Error loading posts:', err);
-      }
-    });
+
+  getServiceTypeLabel(serviceType: string): string {
+    return this.jobService.getServiceTypeLabel(serviceType);
   }
-  
-  loadSpaces() {
-    this.apiService.getSpaces().subscribe({
-      next: (data) => {
-        this.spaces = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Failed to load spaces';
-        this.loading = false;
-        console.error('Error loading spaces:', err);
-      }
-    });
+
+  getServiceTypeDescription(serviceType: string): string {
+    return this.jobService.getServiceTypeDescription(serviceType);
   }
-  
-  loadMembers() {
-    this.apiService.getMembers().subscribe({
-      next: (data) => {
-        this.members = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Failed to load members';
-        this.loading = false;
-        console.error('Error loading members:', err);
-      }
-    });
+
+  getStatusLabel(status: string): string {
+    return this.jobService.getStatusLabel(status);
   }
-  
-  loadCourses() {
-    this.apiService.getCourses().subscribe({
-      next: (data) => {
-        this.courses = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Failed to load courses';
-        this.loading = false;
-        console.error('Error loading courses:', err);
-      }
-    });
+
+  getStatusClass(status: string): string {
+    const statusClasses: {[key: string]: string} = {
+      'draft': 'status-draft',
+      'pending_approval': 'status-pending',
+      'active': 'status-active',
+      'in_progress': 'status-progress',
+      'delivered': 'status-delivered',
+      'disputed': 'status-disputed',
+      'completed': 'status-completed',
+      'closed': 'status-closed'
+    };
+    return statusClasses[status] || '';
   }
-  
-  loadEvents() {
-    this.apiService.getEvents().subscribe({
-      next: (data) => {
-        this.events = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Failed to load events';
-        this.loading = false;
-        console.error('Error loading events:', err);
-      }
+
+  getServiceTypeClass(serviceType: string): string {
+    const serviceClasses: {[key: string]: string} = {
+      'direct_trust': 'service-direct',
+      'guided_trust': 'service-guided',
+      'delegated_trust': 'service-delegated'
+    };
+    return serviceClasses[serviceType] || '';
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   }
 }

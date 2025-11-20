@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, User } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,8 +14,10 @@ import { Subscription } from 'rxjs';
 export class HeaderComponent implements OnInit, OnDestroy {
   userInitials = 'CV';
   userName = '';
+  userRole = '';
   showUserMenu = false;
   isLoggedIn = false;
+  currentUser: User | null = null;
   private userSubscription?: Subscription;
 
   constructor(
@@ -26,9 +28,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Subscribe to user changes to reactively update the UI
     this.userSubscription = this.authService.currentUser.subscribe(user => {
+      this.currentUser = user;
       if (user) {
         this.isLoggedIn = true;
         this.userName = user.name;
+        this.userRole = user.role || '';
         const nameParts = user.name.split(' ');
         this.userInitials = nameParts.length > 1 
           ? nameParts[0][0] + nameParts[1][0]
@@ -37,7 +41,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       } else {
         this.isLoggedIn = false;
         this.userName = '';
+        this.userRole = '';
         this.userInitials = '';
+        this.currentUser = null;
       }
     });
   }
@@ -47,6 +53,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
     }
+  }
+
+  isCompany(): boolean {
+    return this.userRole === 'company';
+  }
+
+  isAdmin(): boolean {
+    return this.userRole === 'admin';
+  }
+
+  navigateToCreateJob() {
+    this.router.navigate(['/create-job']);
   }
 
   toggleUserMenu() {

@@ -27,12 +27,44 @@
 }
 
 .header-right {
-  width: 80px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
   position: relative;
+  min-width: 120px;
+}
+
+.create-job-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background: #5568d3;
+    transform: translateY(-1px);
+  }
+
+  .btn-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .btn-text {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
 }
 
 .menu-icon {
@@ -126,6 +158,12 @@
   color: #fff;
   font-size: 14px;
   font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.user-role {
+  color: #999;
+  font-size: 12px;
 }
 
 .logout-button {

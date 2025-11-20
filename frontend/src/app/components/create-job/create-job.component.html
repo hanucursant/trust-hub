@@ -1,0 +1,182 @@
+<div class="create-job-container">
+  <div class="form-card">
+    <!-- Header -->
+    <div class="form-header">
+      <h1 class="form-title">Create New Job</h1>
+      <p class="form-subtitle">Post a job and find the right expert for your project</p>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="success" class="success-message">
+      <span class="success-icon">✓</span>
+      <span>Job created successfully! Redirecting...</span>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="error-message">
+      <span class="error-icon">⚠</span>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!success" (ngSubmit)="onSubmit()" class="job-form">
+      
+      <!-- Job Title -->
+      <div class="form-group">
+        <label for="title" class="form-label">Job Title *</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          [(ngModel)]="title"
+          class="form-input"
+          placeholder="e.g., Build a mobile app for my business"
+          required
+        />
+      </div>
+
+      <!-- Job Description -->
+      <div class="form-group">
+        <label for="description" class="form-label">Description *</label>
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="description"
+          class="form-textarea"
+          placeholder="Describe your project requirements, goals, and any specific expertise needed..."
+          rows="6"
+          required
+        ></textarea>
+      </div>
+
+      <!-- Service Type -->
+      <div class="form-group">
+        <label class="form-label">Service Type *</label>
+        <div class="service-types">
+          <div 
+            *ngFor="let type of serviceTypes"
+            class="service-type-card"
+            [class.selected]="serviceType === type.value"
+            (click)="selectServiceType(type.value)"
+          >
+            <div class="service-type-header">
+              <input
+                type="radio"
+                [id]="type.value"
+                name="serviceType"
+                [value]="type.value"
+                [(ngModel)]="serviceType"
+              />
+              <label [for]="type.value" class="service-type-label">
+                {{ type.label }}
+              </label>
+            </div>
+            <p class="service-type-description">{{ type.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="form-group">
+        <label for="budget" class="form-label">Budget (USD) *</label>
+        <input
+          type="number"
+          id="budget"
+          name="budget"
+          [(ngModel)]="budget"
+          class="form-input"
+          placeholder="5000"
+          min="0"
+          step="100"
+          required
+        />
+        <div class="budget-breakdown" *ngIf="budget > 0">
+          <div class="breakdown-row">
+            <span class="breakdown-label">Project Budget:</span>
+            <span class="breakdown-value">${{ budget | number:'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Platform Fee ({{ getSelectedServiceType()?.fee }}%):</span>
+            <span class="breakdown-value">${{ calculatePlatformFee() | number:'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-row total">
+            <span class="breakdown-label">Total Cost:</span>
+            <span class="breakdown-value">${{ calculateTotalCost() | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deadline -->
+      <div class="form-group">
+        <label for="deadline" class="form-label">Deadline (Optional)</label>
+        <input
+          type="date"
+          id="deadline"
+          name="deadline"
+          [(ngModel)]="deadline"
+          class="form-input"
+        />
+      </div>
+
+      <!-- Deliverables -->
+      <div class="form-group">
+        <label for="deliverables" class="form-label">Deliverables (Optional)</label>
+        <textarea
+          id="deliverables"
+          name="deliverables"
+          [(ngModel)]="deliverables"
+          class="form-textarea"
+          placeholder="List the expected deliverables, e.g., source code, documentation, deployment..."
+          rows="3"
+        ></textarea>
+      </div>
+
+      <!-- Expert ID (for Direct Trust) -->
+      <div class="form-group" *ngIf="serviceType === 'direct_trust'">
+        <label for="expertId" class="form-label">Expert ID (Optional)</label>
+        <input
+          type="number"
+          id="expertId"
+          name="expertId"
+          [(ngModel)]="expertId"
+          class="form-input"
+          placeholder="Enter expert user ID if you've already identified them"
+        />
+        <p class="form-hint">Only applicable for Direct Trust service type</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Creating...' : 'Create Job' }}
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <h3 class="info-title">ℹ️ What happens next?</h3>
+      <ul class="info-list">
+        <li>Your job will be submitted for admin review</li>
+        <li>Once approved, experts can view and apply to your job</li>
+        <li>You'll be notified when experts express interest</li>
+        <li>Select an expert and funds will be held in secure escrow</li>
+        <li>Release payment when you're satisfied with the work</li>
+      </ul>
+    </div>
+
+  </div>
+</div>

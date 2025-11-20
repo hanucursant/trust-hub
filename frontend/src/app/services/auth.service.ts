@@ -8,6 +8,12 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
+  role?: string;
+  kyc_status?: string;
+  badge?: string;
+  trust_score?: number;
+  company_name?: string;
+  bio?: string;
 }
 
 export interface AuthResponse {
@@ -40,8 +46,12 @@ export class AuthService {
     return !!this.currentUserValue && !!localStorage.getItem('token');
   }
 
-  register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, { name, email, password })
+  register(name: string, email: string, password: string, role: string = 'company', companyName?: string): Observable<AuthResponse> {
+    const payload: any = { name, email, password, role };
+    if (companyName) {
+      payload.company_name = companyName;
+    }
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, payload)
       .pipe(map(response => {
         if (response.token) {
           localStorage.setItem('token', response.token);

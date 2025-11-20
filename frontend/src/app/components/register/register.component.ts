@@ -16,6 +16,8 @@ export class RegisterComponent {
   email = '';
   password = '';
   confirmPassword = '';
+  role = 'company';
+  companyName = '';
   loading = false;
   error = '';
 
@@ -35,6 +37,11 @@ export class RegisterComponent {
       return;
     }
 
+    if (this.role === 'company' && !this.companyName) {
+      this.error = 'Company name is required for company accounts';
+      return;
+    }
+
     if (this.password !== this.confirmPassword) {
       this.error = 'Passwords do not match';
       return;
@@ -48,7 +55,7 @@ export class RegisterComponent {
     this.loading = true;
     this.error = '';
 
-    this.authService.register(this.name, this.email, this.password).subscribe({
+    this.authService.register(this.name, this.email, this.password, this.role, this.companyName).subscribe({
       next: (response) => {
         this.loading = false;
         this.router.navigate(['/']);

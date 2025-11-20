@@ -12,6 +12,16 @@
   </div>
   
   <div class="header-right">
+    <!-- Create Job Button (for companies) -->
+    <button 
+      *ngIf="isLoggedIn && isCompany()" 
+      class="create-job-btn"
+      (click)="navigateToCreateJob()"
+    >
+      <span class="btn-icon">+</span>
+      <span class="btn-text">Create Job</span>
+    </button>
+
     <div class="menu-dots">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
         <circle cx="5" cy="12" r="2"/>
@@ -27,6 +37,7 @@
         <div class="user-avatar">{{ userInitials }}</div>
         <div class="user-info">
           <div class="user-name">{{ userName }}</div>
+          <div class="user-role">{{ userRole | titlecase }}</div>
         </div>
       </div>
       <button class="logout-button" (click)="logout()">

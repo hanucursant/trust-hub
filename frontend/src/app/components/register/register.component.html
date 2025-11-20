@@ -2,20 +2,43 @@
   <div class="auth-card">
     <div class="auth-header">
       <h1>Create Account</h1>
-      <p>Join VSFA+ community today</p>
+      <p>Join TRUST HUB</p>
     </div>
 
-    <form (ngSubmit)="onSubmit()" class="auth-form">
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="auth-form">
+      <div class="error-message" *ngIf="error">
+        {{ error }}
+      </div>
+
+      <div class="form-group">
+        <label for="role">Account Type</label>
+        <select id="role" name="role" [(ngModel)]="role" required>
+          <option value="company">Company (Looking for Experts)</option>
+          <option value="expert">Expert (Offering Services)</option>
+        </select>
+      </div>
+
       <div class="form-group">
         <label for="name">Full Name</label>
         <input
           type="text"
           id="name"
-          [(ngModel)]="name"
           name="name"
-          placeholder="John Doe"
+          [(ngModel)]="name"
+          placeholder="Enter your full name"
           required
-          [disabled]="loading"
+        />
+      </div>
+
+      <div class="form-group" *ngIf="role === 'company'">
+        <label for="companyName">Company Name</label>
+        <input
+          type="text"
+          id="companyName"
+          name="companyName"
+          [(ngModel)]="companyName"
+          placeholder="Enter your company name"
+          required
         />
       </div>
 
@@ -24,11 +47,10 @@
         <input
           type="email"
           id="email"
-          [(ngModel)]="email"
           name="email"
-          placeholder="your@email.com"
+          [(ngModel)]="email"
+          placeholder="Enter your email"
           required
-          [disabled]="loading"
         />
       </div>
 
@@ -37,11 +59,10 @@
         <input
           type="password"
           id="password"
-          [(ngModel)]="password"
           name="password"
-          placeholder="At least 6 characters"
+          [(ngModel)]="password"
+          placeholder="Enter your password"
           required
-          [disabled]="loading"
         />
       </div>
 
@@ -50,26 +71,20 @@
         <input
           type="password"
           id="confirmPassword"
-          [(ngModel)]="confirmPassword"
           name="confirmPassword"
+          [(ngModel)]="confirmPassword"
           placeholder="Confirm your password"
           required
-          [disabled]="loading"
         />
       </div>
 
-      <div *ngIf="error" class="error-message">
-        {{ error }}
-      </div>
-
-      <button type="submit" class="auth-button" [disabled]="loading">
-        <span *ngIf="!loading">Create Account</span>
-        <span *ngIf="loading">Creating account...</span>
+      <button type="submit" [disabled]="loading" class="auth-button">
+        {{ loading ? 'Creating account...' : 'Create Account' }}
       </button>
     </form>
 
     <div class="auth-footer">
-      <p>Already have an account? <a routerLink="/login">Sign In</a></p>
+      <p>Already have an account? <a routerLink="/login">Login</a></p>
     </div>
   </div>
 </div>

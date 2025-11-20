@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
-from models import init_db, get_session, User, Post, Course, Space, Member, Event
+from sqlalchemy import create_engine
+from models import (Base, get_session, User, Post, Course, Space, Member, Event,
+                    Job, Escrow, Milestone, Dispute, UserRole, KYCStatus, BadgeType)
 import hashlib
 
 # Load environment variables
@@ -14,19 +16,17 @@ def hash_password(password):
 def seed_database():
     """Initialize database with mock data"""
     print("Initializing database...")
-    engine = init_db(DATABASE_URL)
+    
+    # Create engine and drop all tables first, then recreate them
+    engine = create_engine(DATABASE_URL)
+    print("Dropping all existing tables...")
+    Base.metadata.drop_all(engine)
+    print("Creating all tables with new schema...")
+    Base.metadata.create_all(engine)
+    
     session = get_session(engine)
     
     try:
-        # Clear existing data
-        print("Clearing existing data...")
-        session.query(Event).delete()
-        session.query(Member).delete()
-        session.query(Space).delete()
-        session.query(Course).delete()
-        session.query(Post).delete()
-        session.commit()
-        
         # Seed Posts
         print("Seeding posts...")
         posts = [
